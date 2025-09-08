@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>FitTrack — Preferences</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Oxygen, Ubuntu, Cantarell, sans-serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #558cfb;
+        color: #fff;
+        padding: 20px;
+      }
+
+      /* Match index.html panel look & size */
+    .landing-container {
+  min-height: 70vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  margin: 40px auto;
+  border-radius: 25px;
+  padding: 15px; 
+  background: linear-gradient(135deg, #667eea, #764ba2, #f093fb) padding-box,
+    linear-gradient(45deg, #ffffff, #adadad) border-box;
+  border: 8px solid transparent;
+  overflow: hidden;
+  width: 90%;
+  max-width: 420px;
+}
+
+      .header {
+        text-align: center;
+        padding: 18px 10px;
+        z-index: 10;
+      }
+      .logo {
+        font-size: 1.8rem;
+        font-weight: 800;
+        background: linear-gradient(45deg, #fff, #f0f8ff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 12px;
+        z-index: 10;
+        position: relative;
+      }
+
+      .card {
+        background: rgba(255, 255, 255, 0.06);
+        padding: 16px;
+        border: 2px solid #bfd4fe2f;
+        border-radius: 14px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+      }
+
+      h1 {
+        font-size: 1.4rem;
+        margin-bottom: 6px;
+        background: linear-gradient(135deg, #fff, #f0f8ff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      p.lead {
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 8px;
+      }
+
+      label {
+        display: block;
+        margin-top: 10px;
+        font-weight: 700;
+        font-size: 0.95rem;
+        margin-bottom: 6px;
+      }
+      select,
+      input[type="number"] {
+        width: 100%;
+        padding: 11px 12px;
+        border-radius: 10px;
+        border: none;
+        outline: none;
+       background: rgba(255, 255, 255);
+    color: #4c4c4c;
+        font-size: 1rem;
+      }
+
+      .hint {
+        font-size: 0.85rem;
+        color: rgba(255, 255, 255, 0.78);
+        margin-top: 6px;
+      }
+
+      .actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 14px;
+      }
+      .btn {
+        flex: 1;
+        padding: 12px 14px;
+        border-radius: 999px;
+        border: none;
+        cursor: pointer;
+        font-weight: 700;
+        color: #fff;
+        background: linear-gradient(135deg, #43e97b, #38f9d7);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      }
+      .btn.secondary {
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+      }
+
+      footer {
+        text-align: center;
+        padding: 12px 10px;
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.8);
+      }
+
+      @media (max-width: 480px) {
+        .landing-container {
+          margin: 18px auto;
+          padding: 16px;
+        }
+        h1 {
+          font-size: 1.2rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="landing-container" role="main" aria-labelledby="prefTitle">
+      <header class="header">
+        <div class="logo">FitTrack</div>
+      </header>
+
+      <div class="content">
+        <div class="card">
+          <h1 id="prefTitle">Set Your Preferences</h1>
+          <p class="lead">
+            Pick a goal, set daily steps target, and your fitness level.
+          </p>
+
+          <form id="prefForm" novalidate>
+            <label for="goal">Fitness Goal</label>
+            <select id="goal" required>
+              <option value="">— Select goal —</option>
+              <option value="lose_weight">Lose Weight</option>
+              <option value="gain_muscle">Gain Muscle</option>
+              <option value="stay_fit">Stay Fit</option>
+            </select>
+
+            <label for="steps">Daily Steps Goal</label>
+            <input
+              id="steps"
+              type="number"
+              min="1000"
+              step="100"
+              placeholder="e.g. 8000"
+              required
+            />
+            <div class="hint">
+              Tip: 7,000–10,000 is a good general range. Minimum allowed: 1000.
+            </div>
+
+            <label for="level">Fitness Level</label>
+            <select id="level" required>
+              <option value="">— Select level —</option>
+              <option value="beginner">Beginner</option>
+              <option value="intermediate">Intermediate</option>
+              <option value="advanced">Advanced</option>
+            </select>
+
+            <div class="actions">
+              <button type="button" id="backBtn" class="btn secondary">
+                Back
+              </button>
+              <button type="submit" id="saveBtn" class="btn">
+                Save & Continue
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <footer>Already have preferences? They will prefill the form.</footer>
+    </div>
+
+    <script>
+      // Prefill if stored
+      document.addEventListener("DOMContentLoaded", () => {
+        const storedGoal = localStorage.getItem("goal");
+        const storedSteps = localStorage.getItem("steps");
+        const storedLevel = localStorage.getItem("level");
+        if (storedGoal) document.getElementById("goal").value = storedGoal;
+        if (storedSteps) document.getElementById("steps").value = storedSteps;
+        if (storedLevel) document.getElementById("level").value = storedLevel;
+      });
+
+      document.getElementById("backBtn").addEventListener("click", () => {
+        window.location.href = "index.html";
+      });
+
+      document
+        .getElementById("prefForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          const goal = document.getElementById("goal").value.trim();
+          const steps = parseInt(document.getElementById("steps").value, 10);
+          const level = document.getElementById("level").value.trim();
+
+          if (!goal) {
+            alert("Please choose a fitness goal.");
+            document.getElementById("goal").focus();
+            return;
+          }
+          if (!steps || steps < 1000) {
+            alert("Please enter a valid daily steps goal (min 1000).");
+            document.getElementById("steps").focus();
+            return;
+          }
+          if (!level) {
+            alert("Please choose your fitness level.");
+            document.getElementById("level").focus();
+            return;
+          }
+
+          // Save keys used by the flow
+          localStorage.setItem("goal", goal);
+          localStorage.setItem("steps", String(steps));
+          localStorage.setItem("level", level);
+
+          // initialize daily tracking if new day or missing
+          const today = new Date().toISOString().slice(0, 10);
+          const lastUpdated = localStorage.getItem("lastUpdated");
+          let history = JSON.parse(
+            localStorage.getItem("stepsHistory") || "[]"
+          );
+
+          if (lastUpdated !== today) {
+            localStorage.setItem("todaySteps", "0");
+            localStorage.setItem("lastUpdated", today);
+            history = history.filter((h) => h.date !== today);
+            history.push({ date: today, steps: 0 });
+            if (history.length > 30)
+              history = history.slice(history.length - 30);
+            localStorage.setItem("stepsHistory", JSON.stringify(history));
+          } else {
+            if (!localStorage.getItem("todaySteps"))
+              localStorage.setItem("todaySteps", "0");
+          }
+
+          // go to dashboard
+          window.location.href = "dashboard.html";
+        });
+    </script>
+  </body>
+</html>

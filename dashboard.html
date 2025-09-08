@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>FitTrack — Dashboard</title>
+    <style>
+      :root {
+        --bg-a: #667eea;
+        --bg-b: #764ba2;
+        --bg-c: #f093fb;
+        --panel-bg: rgba(255, 255, 255, 0.06);
+        --card-bg: rgba(255, 255, 255, 0.04);
+        --glass: rgba(255, 255, 255, 0.06);
+        --accent-start: #43e97b;
+        --accent-end: #38f9d7;
+        --danger-start: #ff5f6d;
+        --danger-end: #ff416c;
+        --surface-shadow: 0 10px 30px rgba(6, 9, 24, 0.45);
+        --radius: 16px;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+          Roboto, "Helvetica Neue", Arial;
+        background: linear-gradient(
+          135deg,
+          var(--bg-a),
+          var(--bg-b),
+          var(--bg-c)
+        );
+        color: #fff;
+        min-height: 100vh;
+        overflow-x: hidden;
+        overflow: auto;
+        padding: 18px;
+      }
+
+      /* main container (matches index style/size) */
+      .panel {
+        width: 100%;
+        max-width: var(--max-width);
+        min-height: auto;
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.03),
+          rgba(255, 255, 255, 0.02)
+        );
+        border-radius: 22px;
+        border: 2px solid #b5b2e5;
+        padding: 14px;
+        box-shadow: var(--surface-shadow);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      header.top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        border-block-end: 2px solid #b5b2e5;
+        padding: 6px 4px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .logo {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        background: linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.08),
+          rgba(255, 255, 255, 0.02)
+        );
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25) inset;
+      }
+
+      .logo svg {
+        width: 22px;
+        height: 22px;
+        opacity: 0.95;
+      }
+      .app-title {
+        font-weight: 800;
+        font-size: 1rem;
+        background: linear-gradient(45deg, #fff, #f0f8ff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .top-actions {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .btn {
+        background: linear-gradient(
+          135deg,
+          var(--accent-start),
+          var(--accent-end)
+        );
+        border: none;
+        color: #fff;
+        padding: 8px 12px;
+        border-radius: 10px;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+        transition: transform 0.12s ease, box-shadow 0.12s ease;
+      }
+      .btn:hover {
+        transform: translateY(-3px);
+      }
+      .btn.ghost {
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        padding: 8px 10px;
+      }
+      .btn.danger {
+        background: linear-gradient(
+          135deg,
+          var(--danger-start),
+          var(--danger-end)
+        );
+      }
+
+      /* dashboard grid */
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      /* top metrics row */
+      .metrics {
+        display: flex;
+        gap: 10px;
+      }
+      .metric-card {
+        flex: 1;
+        background: var(--card-bg);
+        padding: 12px;
+        min-height: 318px;
+        border-radius: 12px;
+        box-shadow: 0 8px 22px rgba(0, 0, 0, 0.22);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 2px solid #b5b2e5;
+        flex-direction: column;
+        gap: 8px;
+        min-width: 0;
+      }
+      .metric-title {
+        font-size: 2rem;
+        color: rgba(255, 255, 255, 0.9);
+      }
+      .metric-value {
+        font-weight: 800;
+        font-size: 2rem;
+      }
+
+      /* progress area */
+      .progress-area {
+        display: flex;
+        gap: 12rem;
+        border: 2px solid #b5b2e5;
+        align-items: center;
+      }
+      .circle-wrap {
+        width: 300px;
+        height: 300px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.02),
+          rgba(255, 255, 255, 0.01)
+        );
+        border-radius: 14px;
+        box-shadow: inset 0 4px 10px rgba(255, 255, 255, 0.02);
+        padding: 8px;
+      }
+      svg.progress-ring {
+        width: 90%;
+        height: 90%;
+        display: block;
+      }
+      .progress-center {
+        position: absolute;
+        text-align: center;
+        font-weight: 800;
+        color: #111;
+        font-size: 0.95rem;
+      }
+
+      .progress-right {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .progress-stats {
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.92);
+      }
+      .linear-track {
+        height: 10px;
+        background: rgba(255, 255, 255, 0.12);
+        border-radius: 999px;
+        overflow: hidden;
+      }
+      .linear-fill {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(
+          135deg,
+          var(--accent-start),
+          var(--accent-end)
+        );
+        transition: width 0.35s ease;
+      }
+
+      .controls {
+        display: flex;
+        gap: 8px;
+        margin-top: 8px;
+        flex-wrap: wrap;
+      }
+      input[type="number"] {
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: none;
+        background: rgb(255, 255, 255);
+        color: #3b3b3b;
+        min-width: 120px;
+        outline: none;
+      }
+
+      .history {
+        display: none;
+      }
+
+      /* footer */
+      .footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+      }
+
+      /* toast */
+      .toast {
+        position: fixed;
+        left: 50%;
+        transform: translateX(-50%) translateY(40px);
+        bottom: 22px;
+        background: rgba(0, 0, 0, 0.82);
+        color: #fff;
+        padding: 10px 14px;
+        border-radius: 10px;
+        opacity: 0;
+        pointer-events: none;
+        transition: all 0.25s ease;
+        z-index: 200;
+        font-weight: 700;
+      }
+      .toast.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+        pointer-events: auto;
+      }
+
+      /* micro-animations */
+      .metric-card:hover {
+        transform: translateY(-4px);
+        transition: transform 0.15s ease;
+      }
+
+      @media (max-width: 520px) {
+        .progress-area {
+          flex-direction: column;
+          align-items: center;
+        }
+        .circle-wrap {
+          width: 110px;
+          height: 110px;
+        }
+        svg.progress-ring {
+          width: 92px;
+          height: 92px;
+        }
+        .metric-value {
+          font-size: 0.96rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="panel" role="main" aria-labelledby="dashTitle">
+      <header class="top">
+        <div class="brand">
+          <div class="logo">
+            <!-- small bolt icon -->
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="white"
+              stroke-width="1.6"
+            >
+              <path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"></path>
+            </svg>
+          </div>
+          <div>
+            <div class="app-title" id="dashTitle">FitTrack Dashboard</div>
+            <div
+              style="font-size: 0.8rem; color: rgba(255, 255, 255, 0.85)"
+              id="miniWelcome"
+            >
+              Welcome back
+            </div>
+          </div>
+        </div>
+
+        <div class="top-actions">
+          <button class="btn ghost" id="editPrefs">Edit Preferences</button>
+          <button class="btn danger" id="logoutBtn">Logout</button>
+        </div>
+      </header>
+
+      <div class="grid">
+        <!-- metrics -->
+        <div class="metrics">
+          <div class="metric-card">
+            <div class="metric-title">Today</div>
+            <div class="metric-value" id="goalShort">—</div>
+            <div style="font-size: 1.5rem; color: rgba(255, 255, 255, 0.78)">
+              Your active goal
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-title">Progress</div>
+            <div class="metric-value" id="progressShort">—</div>
+            <div style="font-size: 1.5rem; color: rgba(255, 255, 255, 0.78)">
+              Steps towards target
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-title">Est. Calories</div>
+            <div class="metric-value" id="caloriesShort">0 kcal</div>
+            <div style="font-size: 1.5rem; color: rgba(255, 255, 255, 0.78)">
+              Rough estimate
+            </div>
+          </div>
+        </div>
+
+        <!-- big progress area -->
+        <div
+          class="progress-area cardlike"
+          aria-label="progress area"
+          style="
+            padding: 4rem;
+            border-radius: 12px;
+            background: var(--panel-bg);
+          "
+        >
+          <div class="circle-wrap">
+            <svg
+              class="progress-ring"
+              viewBox="0 0 120 120"
+              role="img"
+              aria-label="circular progress"
+            >
+              <defs>
+                <linearGradient id="grad1" x1="0" x2="1">
+                  <stop offset="0%" stop-color="var(--accent-start)" />
+                  <stop offset="100%" stop-color="var(--accent-end)" />
+                </linearGradient>
+              </defs>
+              <circle
+                cx="60"
+                cy="60"
+                r="48"
+                stroke="rgba(255,255,255,0.12)"
+                stroke-width="12"
+                fill="none"
+              ></circle>
+              <circle
+                id="progCircle"
+                cx="60"
+                cy="60"
+                r="48"
+                stroke="url(#grad1)"
+                stroke-width="12"
+                fill="none"
+                stroke-linecap="round"
+                stroke-dasharray="302.0"
+                stroke-dashoffset="302.0"
+              ></circle>
+              <g transform="translate(0,0)">
+                <text
+                  id="progText"
+                  x="60"
+                  y="66"
+                  text-anchor="middle"
+                  font-weight="800"
+                  font-size="18"
+                  fill="#0B1A1A"
+                >
+                  0%
+                </text>
+              </g>
+            </svg>
+          </div>
+
+          <div class="progress-right">
+            <div class="progress-stats">
+              <div
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                "
+              >
+                <div style="font-weight: 700; font-size: 2rem" id="todayLabel">
+                  Today's Steps
+                </div>
+                <div style="font-weight: 800; font-size: 1rem" id="todayCount">
+                  0
+                </div>
+              </div>
+              <div
+                style="font-size: 0.9rem; color: rgba(255, 255, 255, 0.85)"
+                id="targetDisplay"
+              >
+                Target: 0
+              </div>
+            </div>
+
+            <div class="linear-track">
+              <div id="linearFill" class="linear-fill" style="width: 0%"></div>
+            </div>
+
+            <div class="controls">
+              <input
+                id="stepInput"
+                type="number"
+                min="0"
+                placeholder="Add steps (e.g. 500)"
+              />
+              <button class="btn" id="addBtn">Add</button>
+              <button class="btn" id="subtractBtn">Subtract</button>
+              <button class="btn ghost" id="resetTodayBtn">Reset</button>
+            </div>
+
+            <div style="margin-top: 8px">
+              <div
+                style="
+                  font-size: 0.85rem;
+                  color: rgba(255, 255, 255, 0.86);
+                  margin-bottom: 6px;
+                "
+              >
+                Last 7 days
+              </div>
+              <div class="history" id="historyList" <!-- aria-hidden="false" -->
+                style="height: 56px" >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div id="lastUpdatedText" class="small">Last updated: —</div>
+      </div>
+    </div>
+
+    <div id="toast" class="toast">Saved</div>
+
+    <script>
+      
+      const toastEl = document.getElementById("toast");
+      const showToast = (txt) => {
+        toastEl.textContent = txt;
+        toastEl.classList.add("show");
+        clearTimeout(toastEl._t);
+        toastEl._t = setTimeout(() => toastEl.classList.remove("show"), 1800);
+      };
+
+      const dateKey = () => new Date().toISOString().slice(0, 10);
+      const goal = localStorage.getItem("goal");
+      const stepsTarget = parseInt(localStorage.getItem("steps"), 10);
+      const level = localStorage.getItem("level");
+
+      if (!goal || !stepsTarget || !level) {
+        window.location.href = "index.html";
+        throw new Error("Redirecting to index - preferences missing");
+      }
+
+      // ensure today entry exists
+      (function ensureTodayEntry() {
+        const today = dateKey();
+        const last = localStorage.getItem("lastUpdated");
+        let history = JSON.parse(localStorage.getItem("stepsHistory") || "[]");
+        if (last !== today) {
+          localStorage.setItem("todaySteps", "0");
+          localStorage.setItem("lastUpdated", today);
+          history = history.filter((h) => h.date !== today);
+          history.push({ date: today, steps: 0 });
+          if (history.length > 30) history = history.slice(history.length - 30);
+          localStorage.setItem("stepsHistory", JSON.stringify(history));
+        } else {
+          if (!history.find((h) => h.date === today)) {
+            history.push({
+              date: today,
+              steps: parseInt(localStorage.getItem("todaySteps") || "0", 10),
+            });
+            if (history.length > 30)
+              history = history.slice(history.length - 30);
+            localStorage.setItem("stepsHistory", JSON.stringify(history));
+          }
+        }
+      })();
+
+      /* UI elements */
+      const goalShort = document.getElementById("goalShort");
+      const progressShort = document.getElementById("progressShort");
+      const caloriesShort = document.getElementById("caloriesShort");
+      const miniWelcome = document.getElementById("miniWelcome");
+
+      const todayCountEl = document.getElementById("todayCount");
+      const targetDisplay = document.getElementById("targetDisplay");
+      const progText = document.getElementById("progText");
+      const progCircle = document.getElementById("progCircle");
+      const linearFill = document.getElementById("linearFill");
+      const progTextNode = document.getElementById("progText");
+
+      const historyList = document.getElementById("historyList");
+      const lastUpdatedText = document.getElementById("lastUpdatedText");
+
+      goalShort.textContent = goal.replace("_", " ");
+      miniWelcome.textContent = `Goal: ${goal.replace("_", " ")} • ${
+        level.charAt(0).toUpperCase() + level.slice(1)
+      }`;
+      targetDisplay.textContent = `Target: ${stepsTarget.toLocaleString()} steps`;
+
+      /* helpers for steps & history */
+      function getTodaySteps() {
+        return parseInt(localStorage.getItem("todaySteps") || "0", 10);
+      }
+      function setTodaySteps(n) {
+        localStorage.setItem("todaySteps", String(n));
+        const today = dateKey();
+        let history = JSON.parse(localStorage.getItem("stepsHistory") || "[]");
+        history = history.filter((h) => h.date !== today);
+        history.push({ date: today, steps: n });
+        if (history.length > 30) history = history.slice(history.length - 30);
+        localStorage.setItem("stepsHistory", JSON.stringify(history));
+      }
+
+      /* circular progress calculations */
+      const R = 48;
+      const CIRC = 2 * Math.PI * R;
+      progCircle.style.strokeDasharray = CIRC.toFixed(1);
+      function setCircle(percent) {
+        const pct = Math.max(0, Math.min(100, percent));
+        const offset = Math.max(0, CIRC - (CIRC * pct) / 100);
+        progCircle.style.strokeDashoffset = offset.toFixed(1);
+        progTextNode.textContent = Math.round(pct) + "%";
+      }
+
+      /* render */
+      function estimateCalories(steps) {
+        // crude estimate: 0.04 kcal per step (approx walking)
+        return Math.round(steps * 0.04);
+      }
+
+      function renderHistory() {
+        const history = JSON.parse(
+          localStorage.getItem("stepsHistory") || "[]"
+        );
+        const last7 = history.slice(-7);
+        historyList.innerHTML = "";
+        // compute max to normalize heights (use target as minimum reference)
+        const maxVal = last7.reduce(
+          (m, h) => Math.max(m, h.steps),
+          stepsTarget
+        );
+        if (last7.length === 0) {
+          const el = document.createElement("div");
+          el.className = "hist-bar";
+          el.style.height = "18px";
+          el.textContent = "—";
+          historyList.appendChild(el);
+          return;
+        }
+        last7.forEach((h) => {
+          const bar = document.createElement("div");
+          bar.className = "hist-bar";
+          const heightPct =
+            maxVal === 0
+              ? 10
+              : Math.max(8, Math.round((h.steps / maxVal) * 100));
+          // scale for visual (max 48px)
+          const px = Math.max(8, Math.round(heightPct * 0.48));
+          bar.style.height = px + "px";
+          bar.title = `${h.date}: ${h.steps} steps`;
+          // show small label inside
+          const label = document.createElement("div");
+          label.style.fontSize = "10px";
+          label.style.fontWeight = "700";
+          label.style.color = "#071216";
+          label.style.lineHeight = "10px";
+          label.textContent = h.steps;
+          bar.appendChild(label);
+          historyList.appendChild(bar);
+        });
+      }
+
+      function renderAll() {
+        const today = getTodaySteps();
+        const percent =
+          stepsTarget > 0 ? Math.min(100, (today / stepsTarget) * 100) : 0;
+        setCircle(percent);
+        linearFill.style.width = Math.round(percent) + "%";
+        document.getElementById("todayCount").textContent =
+          today.toLocaleString();
+        progressShort.textContent = Math.round(percent) + "%";
+        caloriesShort.textContent = `${estimateCalories(today)} kcal`;
+        document.getElementById("progressShort").textContent = `${Math.round(
+          percent
+        )}%`;
+        lastUpdatedText.textContent =
+          "Last updated: " + (localStorage.getItem("lastUpdated") || dateKey());
+        renderHistory();
+      }
+
+      /* init */
+      renderAll();
+
+      /* controls */
+      document.getElementById("addBtn").addEventListener("click", () => {
+        const v = parseInt(document.getElementById("stepInput").value, 10);
+        if (!v || v <= 0) {
+          showToast("Enter a positive number");
+          return;
+        }
+        let cur = getTodaySteps();
+        cur += v;
+        setTodaySteps(cur);
+        localStorage.setItem("lastUpdated", dateKey());
+        document.getElementById("stepInput").value = "";
+        renderAll();
+        showToast("Steps added");
+      });
+
+      document.getElementById("subtractBtn").addEventListener("click", () => {
+        const v = parseInt(document.getElementById("stepInput").value, 10);
+        if (!v || v <= 0) {
+          showToast("Enter a positive number");
+          return;
+        }
+        let cur = getTodaySteps();
+        cur = Math.max(0, cur - v);
+        setTodaySteps(cur);
+        localStorage.setItem("lastUpdated", dateKey());
+        document.getElementById("stepInput").value = "";
+        renderAll();
+        showToast("Steps updated");
+      });
+
+      document.getElementById("resetTodayBtn").addEventListener("click", () => {
+        if (!confirm("Reset today steps to 0?")) return;
+        setTodaySteps(0);
+        localStorage.setItem("lastUpdated", dateKey());
+        renderAll();
+        showToast("Today reset");
+      });
+
+      document.getElementById("logoutBtn").addEventListener("click", () => {
+        if (!confirm("Clear all data and go back to start?")) return;
+        localStorage.clear();
+        window.location.href = "index.html";
+      });
+
+      document.getElementById("editPrefs").addEventListener("click", () => {
+        window.location.href = "preferences.html";
+      });
+
+      /* auto midnight reset if page stays open */
+      let lastDateChecked = dateKey();
+      setInterval(() => {
+        const now = dateKey();
+        if (now !== lastDateChecked) {
+          lastDateChecked = now;
+          let history = JSON.parse(
+            localStorage.getItem("stepsHistory") || "[]"
+          );
+          history = history.filter((h) => h.date !== now);
+          history.push({ date: now, steps: 0 });
+          if (history.length > 30) history = history.slice(history.length - 30);
+          localStorage.setItem("stepsHistory", JSON.stringify(history));
+          localStorage.setItem("todaySteps", "0");
+          localStorage.setItem("lastUpdated", now);
+          renderAll();
+          showToast("New day — steps reset");
+        }
+      }, 60_000);
+    </script>
+  </body>
+</html>
