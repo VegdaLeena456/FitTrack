@@ -24,7 +24,7 @@ body {
   border-radius: 25px;
   background: linear-gradient(135deg, #667eea, #764ba2, #f093fb) padding-box,
     linear-gradient(45deg, #ffffff, #adadad) border-box;
-  border: 8px solid transparent;
+  border: 1px solid transparent;
   overflow: hidden;
   width: 90%;
   max-width: 420px;
