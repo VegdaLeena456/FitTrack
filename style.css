@@ -22,7 +22,6 @@ body {
   flex-direction: column;
   margin: 40px auto;
   border-radius: 25px;
-  padding: 50px; /* border ki thickness */
   background: linear-gradient(135deg, #667eea, #764ba2, #f093fb) padding-box,
     linear-gradient(45deg, #ffffff, #adadad) border-box;
   border: 8px solid transparent;
